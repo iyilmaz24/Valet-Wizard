@@ -2,9 +2,9 @@
 
 import { useCarContext } from "@/lib/hooks";
 import Image from "next/image";
-import carImage from "/public/placeholderImg.jpeg";
 import { Car } from "@/lib/types";
 import CarButton from "./car-button";
+import carFallBackImage from "/public/logoImage.png";
 
 export default function CarDetails() {
   const { selectedCar } = useCarContext();
@@ -49,7 +49,7 @@ function CarPhotoAndName({ selectedCar }: { selectedCar: Car }) {
   return (
     <div className="flex items-center bg-white px-8 py-5 border-b border-light">
       <Image
-        src={carImage}
+        src={selectedCar.imageUrl || carFallBackImage}
         alt="Selected car image"
         height={100}
         width={100}

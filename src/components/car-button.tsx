@@ -61,7 +61,7 @@ export default function CarButton({
               </Button>
             )}
           </DialogTrigger>
-          <DialogContent className="">
+          <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
             <DialogHeader>
               <DialogTitle>
                 {actionType === "add"

@@ -4,18 +4,15 @@ import BackgroundPattern from "@/components/background-pattern";
 import CarContextProvider from "@/contexts/car-context-provider";
 import { Car } from "@/lib/types";
 import SearchContextProvider from "@/contexts/search-context-provider";
+import prisma from "@/lib/db";
 
 export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const apiURL = process.env.API_URL as string;
-  const response = await fetch(apiURL);
-  if (!response.ok) {
-    throw new Error("Failed to fetch cars");
-  }
-  const data: Car[] = await response.json();
+  const data = await prisma.car.findMany();
+  console.log(data);
 
   return (
     <>

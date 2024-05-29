@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Car } from "@/lib/types";
 import { useCarContext, useSearchContext } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
+import carFallBackImage from "/public/logoImage.png";
 
 type CarListProps = {
   cars: Car[];
@@ -35,7 +36,7 @@ export default function CarList() {
             )}
           >
             <Image
-              src={car.imageUrl}
+              src={car.imageUrl || carFallBackImage}
               alt="image of vehicle"
               height={50}
               width={65}
