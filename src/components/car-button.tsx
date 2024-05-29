@@ -18,6 +18,7 @@ type ButtonProps = {
   className?: string;
   actionType: "edit" | "complete" | "add";
   onClick?: () => void;
+  disabled?: boolean;
 };
 
 export default function CarButton({
@@ -25,12 +26,14 @@ export default function CarButton({
   className,
   actionType,
   onClick,
+  disabled,
 }: ButtonProps) {
   const [formOpen, setFormOpen] = useState(false);
 
   if (actionType === "complete") {
     return (
       <Button
+        disabled={disabled}
         variant={"secondary"}
         className={cn("bg-green-300 hover:bg-green-400", className)}
         onClick={onClick}

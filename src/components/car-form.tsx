@@ -3,8 +3,10 @@
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
-import { Button } from "./ui/button";
 import { useCarContext } from "@/lib/hooks";
+import { addCar, editCar } from "@/actions/actions";
+import FormButton from "./form-button";
+import { toast } from "sonner";
 
 type CarFormProps = {
   actionType: "add" | "edit";
@@ -15,27 +17,21 @@ export default function CarForm({
   actionType,
   onFormSubmission,
 }: CarFormProps) {
-  const { handleAddCar, handleEditCar, selectedCar } = useCarContext();
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-    const newCar = {
-      name: formData.get("name") as string,
-      ownerName: formData.get("ownerName") as string,
-      imageUrl: (formData.get("imageUrl") as string) || "",
-      age: +(formData.get("age") as string),
-      notes: formData.get("notes") as string,
-    };
-
-    if (actionType === "edit") handleEditCar(selectedCar!.id, newCar);
-    if (actionType === "add") handleAddCar(newCar);
-    onFormSubmission();
-  };
+  const { selectedCar } = useCarContext();
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col">
+    <form
+      action={async (formData) => {
+        const error = await (actionType === "add"
+          ? addCar(formData)
+          : editCar(selectedCar!.id, formData));
+        if (error) {
+          toast.warning(error.message);
+        }
+        onFormSubmission();
+      }}
+      className="flex flex-col"
+    >
       <div className="space-y-3">
         <div className="space-y-1">
           <Label htmlFor="name">Name</Label>
@@ -92,9 +88,7 @@ export default function CarForm({
         </div>
       </div>
 
-      <Button className="mt-5 self-end" type="submit">
-        {actionType === "add" ? "Add Car" : "Save Changes"}
-      </Button>
+      <FormButton actionType={actionType} />
     </form>
   );
 }

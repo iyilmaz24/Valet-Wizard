@@ -2,6 +2,7 @@
 
 import { Car } from "@/lib/types";
 import { createContext, useState } from "react";
+import { addCar } from "@/actions/actions";
 
 type TCarContext = {
   cars: Car[];
@@ -10,7 +11,6 @@ type TCarContext = {
   selectedCar: Car | undefined;
   totalCars: number;
   handleCompleteCar: (id: string) => void;
-  handleAddCar: (car: Omit<Car, "id">) => void;
   handleEditCar: (carId: string, editedCar: Omit<Car, "id">) => void;
 };
 
@@ -22,10 +22,9 @@ type CarContextProviderProps = {
 export const CarContext = createContext<TCarContext | null>(null);
 
 export default function CarContextProvider({
-  data,
+  data: cars,
   children,
 }: CarContextProviderProps) {
-  const [cars, setCars] = useState(data);
   const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
 
   const selectedCar = cars.find((car) => car.id === selectedCarId);
@@ -38,10 +37,9 @@ export default function CarContextProvider({
     setSelectedCarId(null);
   };
 
-  const handleAddCar = (newCar: Omit<Car, "id">) => {
-    const addedCar = { ...newCar, id: Date.now().toString() };
-    setCars((prev) => [...prev, addedCar]);
-  };
+  // const handleAddCar = async (newCar: Omit<Car, "id">) => {
+  //   await addCar(newCar);
+  // };
   const handleEditCar = (carId: string, editedCar: Omit<Car, "id">) => {
     setCars((prev) =>
       prev.map((car) => (car.id === carId ? { id: car.id, ...editedCar } : car))
@@ -57,7 +55,6 @@ export default function CarContextProvider({
         selectedCar,
         totalCars,
         handleCompleteCar,
-        handleAddCar,
         handleEditCar,
       }}
     >

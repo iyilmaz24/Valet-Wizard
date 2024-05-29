@@ -5,6 +5,8 @@ import Image from "next/image";
 import { Car } from "@/lib/types";
 import CarButton from "./car-button";
 import carFallBackImage from "/public/logoImage.png";
+import { checkOutCar } from "@/actions/actions";
+import { useTransition } from "react";
 
 export default function CarDetails() {
   const { selectedCar } = useCarContext();
@@ -15,7 +17,7 @@ export default function CarDetails() {
 
   return (
     <section className="w-full h-full flex flex-col">
-      <CarPhotoAndName selectedCar={selectedCar} />
+      <CarPhotoAndButtons selectedCar={selectedCar} />
 
       <div className="flex justify-around py-10 px-5 text-center">
         <SectionContent h3Text={"Owner Name"} pText={selectedCar.ownerName} />
@@ -44,8 +46,9 @@ function SectionContent({
   );
 }
 
-function CarPhotoAndName({ selectedCar }: { selectedCar: Car }) {
-  const { handleCompleteCar } = useCarContext();
+function CarPhotoAndButtons({ selectedCar }: { selectedCar: Car }) {
+  const [isPending, startTransition] = useTransition();
+
   return (
     <div className="flex items-center bg-white px-8 py-5 border-b border-light">
       <Image
@@ -64,7 +67,12 @@ function CarPhotoAndName({ selectedCar }: { selectedCar: Car }) {
         <CarButton actionType="edit" />
         <CarButton
           actionType="complete"
-          onClick={() => handleCompleteCar(selectedCar.id)}
+          disabled={isPending}
+          onClick={async () => {
+            startTransition(async () => {
+              await checkOutCar(selectedCar.id);
+            });
+          }}
         />
       </div>
     </div>

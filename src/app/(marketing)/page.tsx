@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="bg-[#c14a4a] text-white/75 min-h-screen flex flex-col xl:flex-row items-center justify-center gap-10">
+    <main className="bg-[#2b5aa5] text-white/75 min-h-screen flex flex-col xl:flex-row items-center justify-center gap-10">
       <Image src={logo} alt="ValetWizard preview" width={520} height={470} />
 
       <div className="flex flex-col items-center max-w-[500px]">

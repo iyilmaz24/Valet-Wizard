@@ -2,9 +2,9 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import BackgroundPattern from "@/components/background-pattern";
 import CarContextProvider from "@/contexts/car-context-provider";
-import { Car } from "@/lib/types";
 import SearchContextProvider from "@/contexts/search-context-provider";
 import prisma from "@/lib/db";
+import { Toaster } from "@/components/ui/sonner";
 
 export default async function Layout({
   children,
@@ -12,7 +12,6 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   const data = await prisma.car.findMany();
-  console.log(data);
 
   return (
     <>
@@ -27,6 +26,8 @@ export default async function Layout({
 
         <Footer />
       </div>
+
+      <Toaster position="top-right" />
     </>
   );
 }
