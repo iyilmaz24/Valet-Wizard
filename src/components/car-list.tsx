@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Car } from "@/lib/types";
-import useCarContext from "@/lib/hooks";
+import { useCarContext, useSearchContext } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 
 type CarListProps = {
@@ -11,10 +11,18 @@ type CarListProps = {
 
 export default function CarList() {
   const { cars, selectedCarId, handleChangeSelectedCarId } = useCarContext();
+  const { searchText } = useSearchContext();
+
+  const filteredCars = cars.filter(
+    (car) =>
+      car.name.toLowerCase().includes(searchText) ||
+      car.id.toLowerCase().includes(searchText) ||
+      car.ownerName.toLowerCase().includes(searchText)
+  );
 
   return (
-    <ul className="bg-white border-b border-black/[0.08]">
-      {cars.map((car) => (
+    <ul className="bg-white border-b border-light">
+      {filteredCars.map((car) => (
         <li key={car.id}>
           <button
             onClick={() => handleChangeSelectedCarId(car.id)}

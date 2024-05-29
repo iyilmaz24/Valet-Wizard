@@ -1,10 +1,21 @@
+import { cn } from "@/lib/utils";
+
+type ContentBlockProps = {
+  children: React.ReactNode;
+  className?: string;
+};
+
 export default function ContentBlock({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+  className,
+}: ContentBlockProps) {
   return (
-    <div className="w-full h-full bg-[#F7F8FA] shadow-sm rounded-md overflow-hidden">
+    <div
+      className={cn(
+        "w-full h-full bg-[#F7F8FA] shadow-sm rounded-md overflow-hidden",
+        className
+      )}
+    >
       {children}
     </div>
   );

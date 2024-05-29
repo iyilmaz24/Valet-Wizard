@@ -1,9 +1,10 @@
 "use client";
 
-import useCarContext from "@/lib/hooks";
+import { useCarContext } from "@/lib/hooks";
 import Image from "next/image";
 import carImage from "/public/placeholderImg.jpeg";
 import { Car } from "@/lib/types";
+import CarButton from "./car-button";
 
 export default function CarDetails() {
   const { selectedCar } = useCarContext();
@@ -44,8 +45,9 @@ function SectionContent({
 }
 
 function CarPhotoAndName({ selectedCar }: { selectedCar: Car }) {
+  const { handleCompleteCar } = useCarContext();
   return (
-    <div className="flex items-center bg-white px-8 py-5 border-b border-black-[8%]">
+    <div className="flex items-center bg-white px-8 py-5 border-b border-light">
       <Image
         src={carImage}
         alt="Selected car image"
@@ -55,8 +57,16 @@ function CarPhotoAndName({ selectedCar }: { selectedCar: Car }) {
       />
 
       <h2 className="text-3xl font-semibold leading-7 ml-5">
-        {selectedCar?.name}
+        {selectedCar.name}
       </h2>
+
+      <div className="ml-auto space-x-2">
+        <CarButton actionType="edit" />
+        <CarButton
+          actionType="complete"
+          onClick={() => handleCompleteCar(selectedCar.id)}
+        />
+      </div>
     </div>
   );
 }
@@ -65,9 +75,9 @@ function CarNotesAndInformation({ selectedCar }: { selectedCar: Car }) {
   return (
     <section
       className="bg-white flex-1 px-7 py-5 mx-8 mb-9
-    border border-black-[8%]"
+    border border-light"
     >
-      {selectedCar?.notes}
+      {selectedCar.notes}
     </section>
   );
 }

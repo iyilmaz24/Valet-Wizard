@@ -1,3 +1,4 @@
+import CarButton from "@/components/car-button";
 import CarDetails from "@/components/car-details";
 import CarList from "@/components/car-list";
 import ContentBlock from "@/components/content-block";
@@ -22,9 +23,11 @@ export default async function Page() {
           <SearchForm />
         </div>
 
-        <div className="md:row-start-2 md:row-span-1 md:col-start-1 md:col-span-1">
+        <div className="relative md:row-start-2 md:row-span-1 md:col-start-1 md:col-span-1">
           <ContentBlock>
             <CarList />
+
+            <CarButton actionType="add" className="absolute bottom-4 right-4" />
           </ContentBlock>
         </div>
 
