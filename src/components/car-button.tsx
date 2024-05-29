@@ -12,6 +12,7 @@ import {
 } from "./ui/dialog";
 import CarForm from "./car-form";
 import { useState } from "react";
+import { flushSync } from "react-dom";
 
 type ButtonProps = {
   buttonText?: string;
@@ -74,7 +75,9 @@ export default function CarButton({
             </DialogHeader>
             <CarForm
               actionType={actionType}
-              onFormSubmission={() => setFormOpen(false)}
+              onFormSubmission={() => {
+                flushSync(() => setFormOpen(false));
+              }}
             />
           </DialogContent>
         </Dialog>

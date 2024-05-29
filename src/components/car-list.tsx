@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { Car } from "@/lib/types";
+import { TCar } from "@/lib/types";
 import { useCarContext, useSearchContext } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 import carFallBackImage from "/public/logoImage.png";
 
 type CarListProps = {
-  cars: Car[];
+  cars: TCar[];
 };
 
 export default function CarList() {

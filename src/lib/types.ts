@@ -1,8 +1,3 @@
-export type Car = {
-  id: string;
-  name: string;
-  ownerName: string;
-  imageUrl: string;
-  age: number;
-  notes: string;
-};
+import { Car } from "@prisma/client";
+
+export type TCar = Omit<Car, "createdAt" | "updatedAt">;

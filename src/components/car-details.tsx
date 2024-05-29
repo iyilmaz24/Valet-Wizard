@@ -2,14 +2,12 @@
 
 import { useCarContext } from "@/lib/hooks";
 import Image from "next/image";
-import { Car } from "@/lib/types";
+import { Car } from "@prisma/client";
 import CarButton from "./car-button";
 import carFallBackImage from "/public/logoImage.png";
-import { checkOutCar } from "@/actions/actions";
-import { useTransition } from "react";
 
 export default function CarDetails() {
-  const { selectedCar } = useCarContext();
+  const { selectedCar, handleCompleteCar } = useCarContext();
 
   if (!selectedCar) {
     return <EmptyView />;
@@ -17,7 +15,10 @@ export default function CarDetails() {
 
   return (
     <section className="w-full h-full flex flex-col">
-      <CarPhotoAndButtons selectedCar={selectedCar} />
+      <CarPhotoAndButtons
+        selectedCar={selectedCar}
+        handleCompleteCar={handleCompleteCar}
+      />
 
       <div className="flex justify-around py-10 px-5 text-center">
         <SectionContent h3Text={"Owner Name"} pText={selectedCar.ownerName} />
@@ -46,9 +47,13 @@ function SectionContent({
   );
 }
 
-function CarPhotoAndButtons({ selectedCar }: { selectedCar: Car }) {
-  const [isPending, startTransition] = useTransition();
-
+function CarPhotoAndButtons({
+  selectedCar,
+  handleCompleteCar,
+}: {
+  selectedCar: Car;
+  handleCompleteCar: (id: string) => void;
+}) {
   return (
     <div className="flex items-center bg-white px-8 py-5 border-b border-light">
       <Image
@@ -67,11 +72,8 @@ function CarPhotoAndButtons({ selectedCar }: { selectedCar: Car }) {
         <CarButton actionType="edit" />
         <CarButton
           actionType="complete"
-          disabled={isPending}
           onClick={async () => {
-            startTransition(async () => {
-              await checkOutCar(selectedCar.id);
-            });
+            await handleCompleteCar(selectedCar.id);
           }}
         />
       </div>

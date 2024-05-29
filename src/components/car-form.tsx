@@ -4,7 +4,6 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { useCarContext } from "@/lib/hooks";
-import { addCar, editCar } from "@/actions/actions";
 import FormButton from "./form-button";
 import { toast } from "sonner";
 
@@ -17,18 +16,22 @@ export default function CarForm({
   actionType,
   onFormSubmission,
 }: CarFormProps) {
-  const { selectedCar } = useCarContext();
+  const { selectedCar, handleAddCar, handleEditCar } = useCarContext();
 
   return (
     <form
       action={async (formData) => {
-        const error = await (actionType === "add"
-          ? addCar(formData)
-          : editCar(selectedCar!.id, formData));
-        if (error) {
-          toast.warning(error.message);
-        }
         onFormSubmission();
+        const carObject = {
+          name: formData.get("name") as string,
+          ownerName: formData.get("ownerName") as string,
+          imageUrl: formData.get("imageUrl") as string,
+          age: Number(formData.get("age")),
+          notes: formData.get("notes") as string,
+        };
+        actionType === "add"
+          ? handleAddCar(carObject)
+          : handleEditCar(selectedCar!.id, carObject);
       }}
       className="flex flex-col"
     >

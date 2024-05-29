@@ -1,18 +1,13 @@
 "use server";
 
 import prisma from "@/lib/db";
+import { TCar } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 
-export async function addCar(formData: FormData) {
+export async function addCar(car: Omit<TCar, "id">) {
   try {
     await prisma.car.create({
-      data: {
-        name: formData.get("name") as string,
-        ownerName: formData.get("ownerName") as string,
-        imageUrl: formData.get("imageUrl") as string,
-        age: parseInt(formData.get("age") as string),
-        notes: formData.get("notes") as string,
-      },
+      data: car,
     });
   } catch (error) {
     return {
@@ -22,17 +17,11 @@ export async function addCar(formData: FormData) {
   revalidatePath("/valet", "layout");
 }
 
-export async function editCar(carId: string, formData: FormData) {
+export async function editCar(carId: string, car: Omit<TCar, "id">) {
   try {
     await prisma.car.update({
       where: { id: carId },
-      data: {
-        name: formData.get("name") as string,
-        ownerName: formData.get("ownerName") as string,
-        imageUrl: formData.get("imageUrl") as string,
-        age: parseInt(formData.get("age") as string),
-        notes: formData.get("notes") as string,
-      },
+      data: car,
     });
   } catch (error) {
     return {
