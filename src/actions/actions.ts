@@ -3,33 +3,74 @@
 import { signIn, signOut } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { TCar } from "@/lib/types";
-import { carFormSchema, carIdSchema } from "@/lib/validations";
+import { authSchema, carFormSchema, carIdSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import bcyrpt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { use } from "react";
+import { toast } from "sonner";
+import { Prisma } from "@prisma/client";
 
 // -- user server actions --
-export async function logIn(authFormData: FormData) {
-  const user = Object.fromEntries(authFormData.entries());
-  await signIn("credentials", user);
+export async function logIn(authFormData: unknown) {
+  // // check that authFormData is a FormData object
+  if (!(authFormData instanceof FormData))
+    return {
+      message: "Log-in failed, please check your inputs.",
+    };
+
+  // const user = Object.fromEntries(authFormData.entries());
+  // const validData = carFormSchema.safeParse(user);
+  // if (!validData.success)
+  //   return {
+  //     message: "Login failed, please meet the email/password requirements.",
+  //   };
+  // Deprecate above code, pass FormData directly to next-auth instead of object
+
+  await signIn("credentials", authFormData);
 }
 
 export async function logOut() {
   await signOut({ redirectTo: "/" });
 }
 
-export async function signUp(authFormData: FormData) {
-  const user = Object.fromEntries(authFormData.entries());
+export async function signUp(authFormData: unknown) {
+  if (!(authFormData instanceof FormData))
+    return {
+      message: "Sign-up failed, please check your inputs.",
+    };
 
-  await prisma.user.create({
-    data: {
-      email: user.email as string,
-      hashedPassword: await bcyrpt.hash(user.password as string, 10),
-    },
-  });
-  await signIn("credentials", user);
+  // convert FormData to object for zod
+  const newUser = Object.fromEntries(authFormData.entries());
+  const validatedFormData = authSchema.safeParse(newUser);
+  if (!validatedFormData.success)
+    return {
+      message: "Sign-up failed, please check your inputs.",
+    };
+
+  const { email, password } = validatedFormData.data;
+  try {
+    await prisma.user.create({
+      data: {
+        email,
+        hashedPassword: await bcyrpt.hash(password, 10),
+      },
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return {
+        message: "Sign-up failed, user already exists.",
+      };
+    }
+    return {
+      message: "Sign-up failed, could not create user.",
+    };
+  }
+  await signIn("credentials", authFormData);
 }
 
 // -- app server actions --

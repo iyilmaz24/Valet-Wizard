@@ -1,7 +1,7 @@
 import { logIn, signUp } from "@/actions/actions";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import AuthFormButton from "./auth-form-button";
 
 export default function AuthForm({
   buttonText,
@@ -19,6 +19,8 @@ export default function AuthForm({
           id="email"
           type="email"
           name="email"
+          required
+          maxLength={40}
         />
       </div>
       <div className="space-y-1 mb-8">
@@ -28,10 +30,12 @@ export default function AuthForm({
           id="password"
           type="password"
           name="password"
+          required
+          maxLength={40}
         />
       </div>
       <div className="flex justify-center">
-        <Button className="w-[75%]">{buttonText || "Log In"}</Button>
+        <AuthFormButton buttonText={buttonText} />
       </div>
     </form>
   );

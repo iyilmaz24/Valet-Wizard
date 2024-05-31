@@ -39,3 +39,10 @@ export const carFormSchema = z.object({
 // })); // CURRENTLY DEPRECATED: useForm getValues() method will not run the transform function
 
 export type TCarForm = z.infer<typeof carFormSchema>;
+
+export const authSchema = z.object({
+  email: z.string().email().max(40),
+  password: z.string().min(4).max(40),
+});
+
+export type TAuthLogin = z.infer<typeof authSchema>;
