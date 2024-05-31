@@ -1,11 +1,42 @@
 "use server";
 
+import { signIn, signOut } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { TCar } from "@/lib/types";
 import { carFormSchema, carIdSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
+import bcyrpt from "bcryptjs";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { use } from "react";
 
+// -- user server actions --
+export async function logIn(authFormData: FormData) {
+  const user = Object.fromEntries(authFormData.entries());
+  await signIn("credentials", user);
+}
+
+export async function logOut() {
+  await signOut({ redirectTo: "/" });
+}
+
+export async function signUp(authFormData: FormData) {
+  const user = Object.fromEntries(authFormData.entries());
+
+  await prisma.user.create({
+    data: {
+      email: user.email as string,
+      hashedPassword: await bcyrpt.hash(user.password as string, 10),
+    },
+  });
+  await signIn("credentials", user);
+}
+
+// -- app server actions --
 export async function addCar(car: unknown) {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+
   const validatedCar = carFormSchema.safeParse(car);
   if (!validatedCar.success) {
     return {
@@ -14,7 +45,14 @@ export async function addCar(car: unknown) {
   }
   try {
     await prisma.car.create({
-      data: validatedCar.data,
+      data: {
+        ...validatedCar.data,
+        User: {
+          connect: {
+            id: session.user.id,
+          },
+        },
+      },
     });
   } catch (error) {
     return {
@@ -25,6 +63,9 @@ export async function addCar(car: unknown) {
 }
 
 export async function editCar(carId: unknown, car: unknown) {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+
   const validatedCarId = carIdSchema.safeParse(carId);
   const validatedCar = carFormSchema.safeParse(car);
   if (!validatedCar.success || !validatedCarId.success) {
@@ -34,7 +75,7 @@ export async function editCar(carId: unknown, car: unknown) {
   }
   try {
     await prisma.car.update({
-      where: { id: validatedCarId.data },
+      where: { id: validatedCarId.data, userId: session.user.id },
       data: validatedCar.data,
     });
   } catch (error) {
@@ -46,6 +87,9 @@ export async function editCar(carId: unknown, car: unknown) {
 }
 
 export async function checkOutCar(carId: unknown) {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+
   const validatedCarId = carIdSchema.safeParse(carId);
   if (!validatedCarId.success) {
     return {
@@ -54,7 +98,7 @@ export async function checkOutCar(carId: unknown) {
   }
   try {
     await prisma.car.delete({
-      where: { id: validatedCarId.data },
+      where: { id: validatedCarId.data, userId: session.user.id },
     });
   } catch (error) {
     return {

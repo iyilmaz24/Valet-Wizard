@@ -7,7 +7,7 @@ export default function Page() {
     <main>
       <H1 className="text-center mb-5">Sign Up</H1>
 
-      <AuthForm buttonText="Create Account"></AuthForm>
+      <AuthForm formType="signup" buttonText="Create Account"></AuthForm>
 
       <p className="text-zinc-500 mt-10 text-md text-center">
         Have an account?{" "}

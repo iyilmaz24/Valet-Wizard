@@ -27,7 +27,7 @@ export default function CarForm({
     formState: { errors },
   } = useForm<TCarForm>({
     resolver: zodResolver(carFormSchema),
-    defaultValues: { ...selectedCar },
+    defaultValues: actionType === "edit" ? { ...selectedCar } : undefined,
   });
 
   return (
