@@ -8,12 +8,13 @@ import { revalidatePath } from "next/cache";
 import bcyrpt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { use } from "react";
-import { toast } from "sonner";
 import { Prisma } from "@prisma/client";
+import { AuthError } from "next-auth";
+
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // -- user server actions --
-export async function logIn(authFormData: unknown) {
+export async function logIn(prevState: unknown, authFormData: unknown) {
   // // check that authFormData is a FormData object
   if (!(authFormData instanceof FormData))
     return {
@@ -27,15 +28,31 @@ export async function logIn(authFormData: unknown) {
   //     message: "Login failed, please meet the email/password requirements.",
   //   };
   // Deprecate above code, pass FormData directly to next-auth instead of object
-
-  await signIn("credentials", authFormData);
+  try {
+    await signIn("credentials", authFormData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin": {
+          return {
+            message: "Invalid credentials.",
+          };
+        }
+        default:
+          return {
+            message: "Login failed, please try again.",
+          };
+      }
+    }
+    throw error; // throw NextJS redirect again to properly route client
+  }
 }
 
 export async function logOut() {
   await signOut({ redirectTo: "/" });
 }
 
-export async function signUp(authFormData: unknown) {
+export async function signUp(prevState: unknown, authFormData: unknown) {
   if (!(authFormData instanceof FormData))
     return {
       message: "Sign-up failed, please check your inputs.",
@@ -147,4 +164,27 @@ export async function checkOutCar(carId: unknown) {
     };
   }
   revalidatePath("/valet", "layout");
+}
+
+// -- payment actions --
+export async function createCheckoutSession() {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+
+  console.log(`${process.env.BASE_URL}/payment?success=true`);
+
+  const checkoutSession = await stripe.checkout.sessions.create({
+    customer_email: session.user.email,
+    line_items: [
+      {
+        price: "price_1PMn8tHyVeJjNhumGGr58kbT",
+        quantity: 1,
+      },
+    ],
+    mode: "payment",
+    success_url: `${process.env.BASE_URL}/payment?success=true`,
+    cancel_url: `${process.env.BASE_URL}/payment?canceled=true`,
+  });
+
+  redirect(checkoutSession.url);
 }
