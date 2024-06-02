@@ -1,7 +1,7 @@
 import SignOutButton from "@/app/(auth)/_components/sign-out-button";
 import H1 from "@/components/H1";
 import ContentBlock from "@/components/content-block";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth-no-edge";
 import { redirect } from "next/navigation";
 
 export default async function Page() {
