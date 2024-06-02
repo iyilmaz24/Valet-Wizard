@@ -3,6 +3,7 @@ import prisma from "./db";
 import bcrypt from "bcryptjs";
 import Credentials from "next-auth/providers/credentials";
 import { TAuthLogin, authSchema } from "./validations";
+import { getUserByEmail } from "./server-utils";
 
 const config = {
   pages: {
@@ -46,11 +47,25 @@ const config = {
       if (!isLoggedIn && privateAccess) {
         return Response.redirect(new URL("/login", request.nextUrl));
       }
-      if (isLoggedIn && privateAccess) {
+
+      if (isLoggedIn && privateAccess && !auth?.user.subscriptionActive) {
+        return Response.redirect(new URL("/payment", request.nextUrl));
+      }
+
+      if (isLoggedIn && privateAccess && auth?.user.subscriptionActive) {
         return true; // returns True to grant access
       }
 
-      if (isLoggedIn && !privateAccess) {
+      if (
+        isLoggedIn &&
+        (request.nextUrl.pathname.includes("/login") ||
+          request.nextUrl.pathname.includes("/signup")) &&
+        auth.user.subscriptionActive
+      ) {
+        return Response.redirect(new URL("/valet/dashboard", request.nextUrl));
+      }
+
+      if (isLoggedIn && !privateAccess && !auth.user.subscriptionActive) {
         if (
           request.nextUrl.pathname.includes("/login") ||
           request.nextUrl.pathname.includes("/signup")
@@ -66,15 +81,24 @@ const config = {
 
       return false;
     },
-    jwt: ({ token, user }) => {
+    jwt: async ({ token, user, trigger }) => {
       if (user) {
         token.userId = user.id;
+        token.email = user.email!;
+        token.subscriptionActive = user.subscriptionActive;
+      }
+      if (trigger === "update") {
+        const userFromDb = await getUserByEmail(token.email);
+        if (userFromDb) {
+          token.subscriptionActive = userFromDb.subscriptionActive;
+        }
       }
       return token;
     },
     session: ({ session, token }) => {
       if (session.user) {
         session.user.id = token.userId;
+        session.user.subscriptionActive = token.subscriptionActive;
       }
       return session;
     },

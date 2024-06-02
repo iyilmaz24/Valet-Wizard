@@ -171,8 +171,6 @@ export async function createCheckoutSession() {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  console.log(`${process.env.BASE_URL}/payment?success=true`);
-
   const checkoutSession = await stripe.checkout.sessions.create({
     customer_email: session.user.email,
     line_items: [
