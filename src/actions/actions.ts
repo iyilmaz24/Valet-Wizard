@@ -1,13 +1,11 @@
 "use server";
 
-import { signIn, signOut } from "@/lib/auth";
+import { signIn, signOut, auth } from "@/lib/auth-no-edge";
 import prisma from "@/lib/db";
-import { TCar } from "@/lib/types";
 import { authSchema, carFormSchema, carIdSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import bcyrpt from "bcryptjs";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
 import { Prisma } from "@prisma/client";
 import { AuthError } from "next-auth";
 

@@ -1,11 +1,7 @@
-import NextAuth, { NextAuthConfig } from "next-auth";
+import { NextAuthConfig } from "next-auth";
 import prisma from "./db";
-import bcrypt from "bcryptjs";
-import Credentials from "next-auth/providers/credentials";
-import { TAuthLogin, authSchema } from "./validations";
-import { getUserByEmail } from "./server-utils";
 
-const config = {
+export const nextAuthEdgeConfig = {
   pages: {
     signIn: "/login",
   },
@@ -13,31 +9,6 @@ const config = {
     maxAge: 7 * 24 * 60 * 60,
     strategy: "jwt",
   },
-  providers: [
-    Credentials({
-      async authorize(credentials) {
-        // runs on login attempt
-
-        const validData = authSchema.safeParse(credentials);
-        // check that the object passes the zod validation
-        if (!validData.success) return null;
-
-        const { email, password } = validData.data;
-        const user = await prisma.user.findUnique({
-          where: { email },
-        });
-        if (!user) return null;
-
-        const validPassword = await bcrypt.compare(
-          password,
-          user.hashedPassword
-        );
-        if (!validPassword) return null;
-
-        return user;
-      },
-    }),
-  ],
   callbacks: {
     authorized: ({ auth, request }) => {
       // runs on every request using middleware
@@ -88,7 +59,11 @@ const config = {
         token.subscriptionActive = user.subscriptionActive;
       }
       if (trigger === "update") {
-        const userFromDb = await getUserByEmail(token.email);
+        const userFromDb = await prisma.user.findUnique({
+          where: {
+            email: token.email,
+          },
+        });
         if (userFromDb) {
           token.subscriptionActive = userFromDb.subscriptionActive;
         }
@@ -103,11 +78,5 @@ const config = {
       return session;
     },
   },
+  providers: [],
 } satisfies NextAuthConfig;
-
-export const {
-  auth,
-  signIn,
-  signOut,
-  handlers: { GET, POST },
-} = NextAuth(config);
