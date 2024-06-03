@@ -7,17 +7,23 @@ import Link from "next/link";
 export default function Home() {
   return (
     <main className="bg-[#3680f6] text-white/75 min-h-[900px] xl:min-h-[800px] flex flex-col xl:flex-row items-center py-12 xl:py-0 xl:justify-center gap-10 xl:gap-20">
-      <Image src={preview} alt="ValetWizard preview" width={520} height={470} />
+      <Image src={preview} alt="ValetWizard preview" width={450} height={420} />
 
       <div className="flex flex-col items-center max-w-[500px]">
         <span className="w-full flex justify-center xl:justify-start">
           <Logo />
         </span>
-        <h1 className="text-3xl lg:text-4xl font-semibold my-6 text-center xl:text-left">
+        <h1
+          className="text-2xl lg:text-3xl font-semibold my-5 text-center xl:text-left
+        max-w-[80%] lg:max-w-[100%]"
+        >
           <span className="font-extrabold">ValetWizard</span> helps manage your
           valet parking business.
         </h1>
-        <p className="text-lg lg:text-xl font-medium text-center xl:text-left">
+        <p
+          className="text-lg lg:text-xl font-medium text-center xl:text-left
+        max-w-[80%] lg:max-w-[100%]"
+        >
           Get our software set-up and ready to make you more successful within
           minutes.
         </p>
