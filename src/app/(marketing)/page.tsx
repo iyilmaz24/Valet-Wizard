@@ -6,8 +6,29 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="bg-[#3680f6] text-white/75 min-h-[900px] xl:min-h-[800px] flex flex-col xl:flex-row items-center py-12 xl:py-0 xl:justify-center gap-10 xl:gap-20">
-      <Image src={preview} alt="ValetWizard preview" width={450} height={420} />
+    <main
+      className="bg-[#3680f6] text-white/75 min-h-[900px] xl:min-h-[800px] flex flex-col 
+    xl:flex-row items-center py-12 xl:py-0 xl:justify-center gap-4 xl:gap-20"
+    >
+      <div
+        style={{
+          width: "min(90vw, 450px)",
+          height: "min(70vw, 420px)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Image
+          src={preview}
+          alt="ValetWizard preview"
+          sizes="100vw"
+          // width={450}
+          // height={420}
+          objectFit="fill"
+          // style={{ width: "100%", height: "100%" }}
+        />
+      </div>
 
       <div className="flex flex-col items-center max-w-[500px]">
         <span className="w-full flex justify-center xl:justify-start">
