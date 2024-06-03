@@ -1,13 +1,13 @@
 import Image from "next/image";
-import logo from "/public/logoImage.png";
+import preview from "/public/valetwizard-home.png";
 import Logo from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="bg-[#2b5aa5] text-white/75 min-h-screen flex flex-col xl:flex-row items-center justify-center gap-10">
-      <Image src={logo} alt="ValetWizard preview" width={520} height={470} />
+    <main className="bg-[#3680f6] text-white/75 min-h-[900px] xl:min-h-[800px] flex flex-col xl:flex-row items-center py-12 xl:py-0 xl:justify-center gap-10 xl:gap-20">
+      <Image src={preview} alt="ValetWizard preview" width={520} height={470} />
 
       <div className="flex flex-col items-center max-w-[500px]">
         <span className="w-full flex justify-center xl:justify-start">
