@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const linkStyles =
-  "px-5 hover:scale-105 font-thin hover:font-light bg-black/15 m-3 p-1";
+  "px-5 hover:scale-105 font-light  bg-black/15 hover:bg-black/25  m-3 p-1";
 
 export default function MarketingHeader() {
   return (
